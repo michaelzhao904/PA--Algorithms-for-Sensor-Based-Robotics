@@ -1,7 +1,10 @@
 function [T] = FK_body(M,tab_body,config)
 %FK_BODY takes in end effector configuration M and screw axes table
-%tab_body and 
-%   Detailed explanation goes here
+%tab_body and joints configurations and outputs the pose of the end
+%effector
+%   M:4-by-4 matrix
+%   tab_body: n-by-6 matrix, n: # of joints, with row: [w1 w2 w3 v1 v2 v3]
+%   config: 1-by-n vector([joint 1 angle, joint 2 angle,...joint n angle])
 T = M;
 for i = 1:size(tab_body,1)
     w = tab_body(i,1:3);

@@ -1,8 +1,9 @@
 function [J_body] = J_body(tab_body,config)
-%J_BODY computes the Jacobian matrix for open chain robot defined by end
-%screw axes table tab_body; config defines the
-%set of joint angles. The output is the Jacobian matrix
-%   Detailed explanation goes here
+%J_BODY computes the Jacobian matrix for open chain robot defined by screw
+%axis table tab_body; config defines the set of joint angles. The output is
+%the Jacobian matrix
+%   tab_body: n-by-6 matrix, n: # of joints, with row: [w1 w2 w3 v1 v2 v3]
+%   config: 1-by-n vector([joint 1 angle, joint 2 angle,...joint n angle])
 n = size(tab_body,1);
 J_body = zeros(6, n);
 
