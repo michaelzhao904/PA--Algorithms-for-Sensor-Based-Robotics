@@ -1,4 +1,5 @@
 %% PA2 Problem c)--find the forward kinematics using body form
+%% This part finds the forward kinematics of the robot using the body form
 R = [1, 0, 0;
      0, -1, 0;
      0, 0, -1];
@@ -41,3 +42,8 @@ tab_body = [w1, v1;
        w5, v5;
        w6, v6;
        w7, v7];
+   
+%% Testing FK_body.m and J_body
+config = zeros(7,1); %set all joint angles to be zero
+T = FK_body(M,tab_body,config);
+J_body = J_body(tab_body,config);
