@@ -16,7 +16,7 @@ for i=1:n
             v = tab_body(j,4:6);
             if w == zeros(1,3)
                 R = eye(3);
-                trans = -config(j)*v;
+                trans = -config(j)*v';
             else
                 R = cvt_rotvec2R(w,-config(j));
                 w_m = skewSymm(w);
