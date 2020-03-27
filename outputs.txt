@@ -1,0 +1,42 @@
+wrt space frame
+ 0.2008    0.8940    0.4006   -0.2627
+   -0.4006    0.4481   -0.7992    0.5242
+   -0.8940         0    0.4481   -0.0593
+         0         0         0    1.0000
+
+wrt body frame
+ans =
+
+   -0.5985   -0.8012         0    0.0866
+   -0.8012    0.5985         0   -0.0155
+         0         0   -1.0000    1.0330
+         0         0         0    1.0000
+wrt body frame all anlges are zero
+ans =
+
+    1.0000         0         0    0.0880
+         0   -1.0000         0         0
+         0         0   -1.0000    1.0330
+         0         0         0    1.0000
+
+wrt space frame all angles are zero
+ans =
+
+    1.0000         0         0    0.0880
+         0   -1.0000         0         0
+         0         0   -1.0000    1.0330
+         0         0         0    1.0000
+
+
+FK of the Franka Emica Robot:
+1) Run pa_ca_space
+2) Run the FK_space algorithm
+Get the output.
+Output= 
+For angles of joints as [0 0 0 0 0 0 0]
+ans =
+
+    1.0000         0         0    0.0880
+         0   -1.0000         0         0
+         0         0   -1.0000    1.0330
+         0         0         0    1.0000
