@@ -59,3 +59,8 @@ showdetails(Panda)
 
 show(Panda);
 axis off
+
+Panda.DataFormat = 'row';
+%% 
+geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
+show(Panda,homeConfiguration(Panda));hold on;axis off
