@@ -1,4 +1,4 @@
-function tab_config = J_transpose_kinematics(T_sd, M, tab_body, config, K, delta)
+function tab_config = J_transpose_kinematics(T_sd, M, tab_body, config, K, delta,dt)
 %J_TRANSPOSE_KINEMATICS Summary of this function goes here
 %   Detailed explanation goes here
 tab_config = config;
