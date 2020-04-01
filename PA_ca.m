@@ -35,11 +35,7 @@ w7 = [0, 0, 1];
 q7 = [0, 0, -0.107];
 v7 = -cross(w7,q7);
 
-% w8 = [0,0,1];
-% q8 = [0, 0, 0];
-% v8 = -cross(w8,q8);
-
-tab_body = [w1, v1;
+tab_b = [w1, v1;
        w2, v2;
        w3, v3;
        w4, v4;
@@ -48,6 +44,7 @@ tab_body = [w1, v1;
        w7, v7];
    
 %% Testing FK_body.m and J_body
-config = zeros(7,1); %set all joint angles to be zero
-T = FK_body(M,tab_body,config);
-J_body = J_body(tab_body,config);
+% config = zeros(7,1); %set all joint angles to be zero
+config = [pi/4,pi/4,pi/4,0,0,0,0]';
+T_b = FK_body(M,tab_b,config);
+J_body = J_body(tab_b,config);

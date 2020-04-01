@@ -62,5 +62,7 @@ axis off
 
 Panda.DataFormat = 'row';
 %% 
+T_tb = getTransform(Panda,[pi/4,pi/4,pi/4,0,0,0,0,0],'body8');
+
 geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
 show(Panda,homeConfiguration(Panda));hold on;axis off
