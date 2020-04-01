@@ -45,6 +45,6 @@ tab_b = [w1, v1;
    
 %% Testing FK_body.m and J_body
 % config = zeros(7,1); %set all joint angles to be zero
-config = [pi/4,pi/4,pi/4,0,0,0,0]';
-T_b = FK_body(M,tab_b,config);
-J_body = J_body(tab_b,config);
+% config = [pi/4,pi/4,pi/4,0,0,0,0]';
+% T_b = FK_body(M,tab_b,config);
+% J_body = J_body(tab_b,config);
