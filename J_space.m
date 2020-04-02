@@ -15,18 +15,18 @@ for i=1:n
             v = tab_space(j,4:6);
             if w == zeros(1,3)                  %if the joint is prismatic
                 R = eye(3);
-                trans = -config(j)*v';
+                trans = config(j)*v';
             else
-                R = cvt_rotvec2R(w,-config(j)); %if it is a revolute joint
+                R = cvt_rotvec2R(w,config(j)); %if it is a revolute joint
                 w_m = skewSymm(w);
-                trans = (eye(3)*-config(j)+(1-cos(-config(j)))*w_m+(-config(j)...
-                    -sin(-config(j)))*w_m^4)*v';
+                trans = (eye(3)*config(j)+(1-cos(config(j)))*w_m+(config(j)...
+                    -sin(config(j)))*w_m^2)*v';
             end
             exp =  [R, trans;
                 zeros(1,3), 1];
             T = T*exp;
         end
-        J_space(:,k) = Ad_T(T)*S_i;     %%here is the fault
     end
+    J_space(:,i) = Ad_T(T)*S_i;
 end
 end
