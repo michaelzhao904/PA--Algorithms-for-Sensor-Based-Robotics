@@ -33,7 +33,8 @@ for i = 1:size(x,1)
     end
 end
 surf(x,y,z);
-% axis equal;
+axis equal;
+title(['ellipsoid for ',type]);
 
 end
 

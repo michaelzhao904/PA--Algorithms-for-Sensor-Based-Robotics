@@ -23,10 +23,11 @@ for j = 1:n
         zeros(1,3), 1];
     T = exp*T;
 end
-figure(1);axis equal;hold on; grid on;%plotting the end-effector frame
-xlim([-2,2]);ylim([-2,2]);zlim([-2,2]);
-quiver3(T(1,4),T(2,4),T(3,4),T(1,1),T(2,1),T(3,1),1,'r','lineWidth',2);
-quiver3(T(1,4),T(2,4),T(3,4),T(1,2),T(2,2),T(3,2),1,'g','lineWidth',2);
-quiver3(T(1,4),T(2,4),T(3,4),T(1,3),T(2,3),T(3,3),1,'b','lineWidth',2);
-view(3);
-end                                    
+%% uncomment code below for making plot
+% figure(1);axis equal;hold on; grid on;%plotting the end-effector frame
+% xlim([-2,2]);ylim([-2,2]);zlim([-2,2]);
+% quiver3(T(1,4),T(2,4),T(3,4),T(1,1),T(2,1),T(3,1),1,'r','lineWidth',2);
+% quiver3(T(1,4),T(2,4),T(3,4),T(1,2),T(2,2),T(3,2),1,'g','lineWidth',2);
+% quiver3(T(1,4),T(2,4),T(3,4),T(1,3),T(2,3),T(3,3),1,'b','lineWidth',2);
+% view(3);
+% end                                    

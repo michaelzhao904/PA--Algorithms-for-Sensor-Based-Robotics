@@ -1,4 +1,4 @@
-%% This code defines and simulates the robot
+%% This code defines and simulates the robot and nests tests for functions
 
 dhparams = [0 0 0.333 0;
             0 -pi/2 0 0;
@@ -59,56 +59,70 @@ addBody(Panda,body8,'body7')
 
 % show(Panda);
 % axis off
-
 Panda.DataFormat = 'row';
 
-% T_tb = getTransform(Panda,[pi/4,pi/4,pi/4,0,0,0,0,0],'body8');
-
-% geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
-% show(Panda,homeConfiguration(Panda));hold on;axis off
-
 %% Predefined configurations
-run('PA_a.m'); % obtain M and tab_space
-run('PA_ca.m'); % obtain M and tab_b
+run('PA_a.m'); % obtain M and tab_s(M :home configuration pose, tab_s: screw axis info for space frame)
+run('PA_ca.m'); % obtain M and tab_b(M :home configuration pose, tab_b: screw axis info for space frame)
 homeConfig = zeros(8,1); % robot home configuration
-config = [0,0,0,0,0,0,0,0]'; % test config
-config_2 = [0,pi/2,pi/4,pi/4,pi/4,pi/4,0,0]';
-config = config_2;
+% config = [0,0,0,0,0,0,0,0]'; % test config
+config = [0,pi/2,pi/4,pi/4,pi/4,pi/4,pi/2,0]'; % test config for report
+config = config; % user can change the config value for different tests
+
 %% Tests for FK_space, FK_body
 
 % test for FK
-FK_s = FK_space(M,tab_s,config);
-FK_b = FK_body(M,tab_b,config);
-FK_m = getTransform(Panda,config','body8');
-
-% % test for Jacobian
-% J_b = J_body(tab_b,config);
-% % J_s = J_space(tab_space,config);
-% J_s2b = Ad_T(FK_b)*J_b;
+FK_s = FK_space(M,tab_s,config); % Forward kinematics with space frame
+FK_b = FK_body(M,tab_b,config); % Forward kinematics with body frame
+FK_m = getTransform(Panda,config','body8'); % Forward kinematics with MATLAB built-in function
+% The above three values should be the same.
 
 %% Tests for J_space, J_body
 
-J_s = J_space(tab_s,config)
-J_b = J_body(tab_b,config);
-T_sb = FK_body(M,tab_b,config);
-J_b2s = Ad_T(T_sb)*J_b
+J_s = J_space(tab_s,config); % Space Jacobian at test config
+J_b = J_body(tab_b,config); % Boby Jacobian at test config
+T_sb = FK_body(M,tab_b,config); % pose of end effector
+J_b2s = Ad_T(T_sb)*J_b; % Convert body Jacobian to space Jacobian
+% J_b2s should be the same with J_s
+%% Tests for ellipsoid_plot, J_isotropy, J_condition, J_ellipsoid_volume.m
+% 'w' 'v' 'all' specify which kind of Jacobian used.
+% 'w': rotational Jacobian  'v':velocity Jacobian  'all':whole Jacobian
+figure;
+ellipsoid_plot(J_b,'w');
+figure;
+ellipsoid_plot(J_b,'v');
+J_isotropy_w = J_isotropy(J_b,'w');
+J_isotropy_v = J_isotropy(J_b,'v');
+J_isotropy_all = J_isotropy(J_b,'all');
+J_condition_w = J_condition(J_b,'w');
+J_condition_v = J_condition(J_b,'v');
+J_condition_all = J_condition(J_b,'all');
+J_ellipsoid_volume_w = J_ellipsoid_volume(J_b,'w');
+J_ellipsoid_volume_v = J_ellipsoid_volume(J_b,'v');
+J_ellipsoid_volume_all = J_ellipsoid_volume(J_b,'all');
+
 %% Test for J_inverse_kinematics.m
 
-T_sd = FK_body(M,tab_b,config_2); %set desired configuration
+T_sd = FK_body(M,tab_b,config); %set desired configuration
 delta = [1e-3,1e-3]; % orientation and position error tolerance
-dt = 1e-4;
+dt = 1e-4; % specify time step
 % solve for inverse kinematic motion for different methos
+% get inverse kinematics solution data
 inverse_solution = J_inverse_kinematics(T_sd,M,tab_b,homeConfig,delta,dt);
-% transpose_solution = J_transpose_kinematics(T_sd,M,tab_b,homeConfig,eye(6),delta,dt);
-% redundancy_solution = redundancy_resolution(T_sd, M, tab_b,...
-%     homeConfig, delta, 0.1, dt);
+% get transpose kinematics solution data
+transpose_solution = J_transpose_kinematics(T_sd,M,tab_b,homeConfig,eye(6),delta,dt);
+% get redundancy resolution solution data
+redundancy_solution = redundancy_resolution(T_sd, M, tab_b,...
+    homeConfig, delta, 0.1, dt);
 
 % end pose with different methods
 T_end_inverse = FK_body(M,tab_b,inverse_solution(end,:));
-% T_end_transpose = FK_body(M,tab_b,transpose_solution(end,:));
-% T_end_redundancy = FK_body(M,tab_b,redundancy_solution(end,:));
-
+T_end_transpose = FK_body(M,tab_b,transpose_solution(end,:));
+T_end_redundancy = FK_body(M,tab_b,redundancy_solution(end,:));
+% T_end_inverse, T_end_transpose, T_end_redundancy should be close to T_sd
 %% Simulation
-visualRobot(Panda,T_sd,inverse_solution,100);
-visualRobot(Panda,T_sd,transpose_solution,100);
-visualRobot(Panda,T_sd,redundancy_solution,100);
+% simulate each cases
+frames = 100; %specify simultaion frames number
+visualRobot(Panda,T_sd,inverse_solution,frames);
+visualRobot(Panda,T_sd,transpose_solution,frames);
+visualRobot(Panda,T_sd,redundancy_solution,frames);
