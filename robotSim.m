@@ -55,14 +55,54 @@ addBody(Panda,body6,'body5')
 addBody(Panda,body7,'body6')
 addBody(Panda,body8,'body7')
 
-showdetails(Panda)
+% showdetails(Panda)
 
-show(Panda);
-axis off
+% show(Panda);
+% axis off
 
 Panda.DataFormat = 'row';
 %% 
-T_tb = getTransform(Panda,[pi/4,pi/4,pi/4,0,0,0,0,0],'body8');
+% T_tb = getTransform(Panda,[pi/4,pi/4,pi/4,0,0,0,0,0],'body8');
 
-geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
-show(Panda,homeConfiguration(Panda));hold on;axis off
+% geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
+% show(Panda,homeConfiguration(Panda));hold on;axis off
+
+%% Predefined configurations
+homeConfig = zeros(8,1); % robot home configuration
+config = [0,0,0,0,0,0,0,0]'; % test config
+config_2 = [0,pi/2,pi/4,pi/4,pi/4,pi/4,0,0];
+%% Tests for FK_space, FK_body, J_space, J_body
+
+% run('PA_a.m'); % obtain M and tab_space
+run('PA_ca.m'); % obtain M and tab_b
+
+% test for FK
+% FK_s = FK_space(M,tab_space,config);
+FK_b = FK_body(M,tab_b,config);
+FK_m = getTransform(Panda,config','body8');
+
+% test for Jacobian
+J_b = J_body(tab_b,config);
+% J_s = J_space(tab_space,config);
+J_s2b = Ad_T(FK_b)*J_b;
+
+%% Test for J_inverse_kinematics.m
+
+T_sd = FK_body(M,tab_b,config_2); %set desired configuration
+delta = [1e-3,1e-3]; % orientation and position error tolerance
+dt = 1e-4;
+% solve for inverse kinematic motion for different methos
+inverse_solution = J_inverse_kinematics(T_sd,M,tab_b,homeConfig,delta,dt);
+% transpose_solution = J_transpose_kinematics(T_sd,M,tab_b,homeConfig,eye(6),delta,dt);
+% redundancy_solution = redundancy_resolution(T_sd, M, tab_b,...
+%     homeConfig, delta, 0.1, dt);
+
+% end pose with different methods
+T_end_inverse = FK_body(M,tab_b,inverse_solution(end,:));
+% T_end_transpose = FK_body(M,tab_b,transpose_solution(end,:));
+% T_end_redundancy = FK_body(M,tab_b,redundancy_solution(end,:));
+
+%% Simulation
+visualRobot(Panda,T_sd,inverse_solution,100);
+visualRobot(Panda,T_sd,transpose_solution,100);
+visualRobot(Panda,T_sd,redundancy_solution,100);

@@ -32,9 +32,11 @@ vs6 = -cross(ws6,qs6);
 
 Js = [ws1 ws2 ws3 ws4 ws5 ws6;
       vs1 vs2 vs3 vs4 vs5 vs6];
-f(theta1,theta2,theta3,theta4,theta5,theta6)=Js;
-f_full(theta1,theta2,theta3,theta4,theta5,theta6,L)=Js;
+% f(theta1,theta2,theta3,theta4,theta5,theta6)=Js;
+f_full(theta1,theta2,theta3,theta4,theta5,theta6,L)=Js
 J  = f_full(0,pi/2,0,pi,pi,0,1); % Assume L = 1
-J  = f_full(0,0,-pi/2,0,0,0,0); % Assume L = 1
-J = double(J)
+% J  = f_full(0,0,-pi/2,0,0,0,0); % Assume L = 1
+% J = double(J)
 % [v,d] = eig(J)
+% eqn = det(f) == 0;
+% solve(eqn,[theta1 theta2 theta3 theta4 theta5 theta6 L])

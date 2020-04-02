@@ -1,5 +1,5 @@
 function redundancy_solution = redundancy_resolution(T_sd, M, tab_body,...
-    config,angle_err, vel_err, k0, dt)
+    config, delta, k0, dt)
 %This function is for calculating the inverse kinematics with an added aim 
 %of maximizing the manipulability measure and aim at exploiting 
 %redundancy by moving away from singulariites.
@@ -11,7 +11,8 @@ function redundancy_solution = redundancy_resolution(T_sd, M, tab_body,...
 %dt: time step of simultaion
 %redundancy_solution: time series of joint angles. 1st dimension for time,
 %2nd dimension for joint angles
-
+angle_err = delta(1);
+vel_err = delta(2);
 p_dim = size(tab_body,1);
 w = ones(1,3);      %used for initialising the variables n and n1
 v = ones(1,3);
@@ -26,12 +27,12 @@ while n > angle_err || n1 > vel_err
     R = T_bd(1:3,1:3);
     p = T_bd(1:3,4);
     [w, theta] = cvt_R2rotvec(R);
-    [W] = skewSymm(w);
+    W = skewSymm(w);
     G_inv =  eye(3)/theta - 0.5*W + (1/theta-0.5*cot(theta/2))*W^2;
     v = G_inv*p;
     V_twist = [w ; v];
-    n = norm(w);
-    n1 = norm(v);
+    n = norm(w*theta);
+    n1 = norm(v*theta);
     
     J = J_body(tab_body, config);
     J_pinv = pinv(J);
