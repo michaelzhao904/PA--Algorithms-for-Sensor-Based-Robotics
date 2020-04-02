@@ -35,13 +35,18 @@ w7 = [0, 0, 1];
 q7 = [0, 0, -0.107];
 v7 = -cross(w7,q7);
 
+w8 = [0,0,1];
+q8 = [0,0,0];
+v8 = -cross(w8,q8);
+
 tab_b = [w1, v1;
        w2, v2;
        w3, v3;
        w4, v4;
        w5, v5;
        w6, v6;
-       w7, v7];
+       w7, v7;
+       w8, q8];
    
 %% Testing FK_body.m and J_body
 % config = zeros(7,1); %set all joint angles to be zero
