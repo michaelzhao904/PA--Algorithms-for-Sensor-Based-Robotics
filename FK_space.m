@@ -6,7 +6,7 @@ function [T] = FK_space(M,tab_space,config)
 %config is a matrix which describes the angles of the robot
 T = M; 
 n = size(tab_space,1);
-for j = 1:size(tab_space,1)
+for j = 1:n
     i = n+1-j;
     w = tab_space(i,1:3);
     v = tab_space(i,4:6);
@@ -22,18 +22,11 @@ for j = 1:size(tab_space,1)
     exp = [R, trans;                  %forming the product of exponentials 
         zeros(1,3), 1];
     T = exp*T;
-<<<<<<< HEAD
 end
-figure(1);axis equal;hold on; grid on;
+figure(1);axis equal;hold on; grid on;%plotting the end-effector frame
 xlim([-2,2]);ylim([-2,2]);zlim([-2,2]);
 quiver3(T(1,4),T(2,4),T(3,4),T(1,1),T(2,1),T(3,1),1,'r','lineWidth',2);
 quiver3(T(1,4),T(2,4),T(3,4),T(1,2),T(2,2),T(3,2),1,'g','lineWidth',2);
 quiver3(T(1,4),T(2,4),T(3,4),T(1,3),T(2,3),T(3,3),1,'b','lineWidth',2);
 view(3);
-=======
-end                                    %plotting the end-effector frame
- figure(1);axis equal;hold on; xlim([0,10]);ylim([0,10]);zlim([0,10]);
- quiver3(T(1,4),T(2,4),T(3,4),T(1,1),T(2,1),T(3,1),1,'r','lineWidth',2);
- quiver3(T(1,4),T(2,4),T(3,4),T(1,2),T(2,2),T(3,2),1,'g','lineWidth',2);
- quiver3(T(1,4),T(2,4),T(3,4),T(1,3),T(2,3),T(3,3),1,'b','lineWidth',2);
->>>>>>> 0ee1b48218d40e4b5746b4b79f1ec58a14cbf31d
+end                                    
