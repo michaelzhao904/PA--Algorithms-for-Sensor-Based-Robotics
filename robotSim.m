@@ -1,5 +1,5 @@
 %% This code defines and simulates the robot and nests tests for functions
-
+%% Define robot using Robotics System Toolbox
 dhparams = [0 0 0.333 0;
             0 -pi/2 0 0;
             0 pi/2 0.316 0;
@@ -69,22 +69,21 @@ homeConfig = zeros(8,1); % robot home configuration
 config = [0,pi/2,pi/4,pi/4,pi/4,pi/4,pi/2,0]'; % test config for report
 config = config; % user can change the config value for different tests
 
-%% Tests for FK_space, FK_body
-
+%% Tests for FK_space, FK_body function
 % test for FK
 FK_s = FK_space(M,tab_s,config); % Forward kinematics with space frame
 FK_b = FK_body(M,tab_b,config); % Forward kinematics with body frame
 FK_m = getTransform(Panda,config','body8'); % Forward kinematics with MATLAB built-in function
 % The above three values should be the same.
 
-%% Tests for J_space, J_body
+%% Tests for J_space, J_body function
 
 J_s = J_space(tab_s,config); % Space Jacobian at test config
 J_b = J_body(tab_b,config); % Boby Jacobian at test config
 T_sb = FK_body(M,tab_b,config); % pose of end effector
 J_b2s = Ad_T(T_sb)*J_b; % Convert body Jacobian to space Jacobian
 % J_b2s should be the same with J_s
-%% Tests for ellipsoid_plot, J_isotropy, J_condition, J_ellipsoid_volume.m
+%% Tests for ellipsoid_plot, J_isotropy, J_condition, J_ellipsoid_volume
 % 'w' 'v' 'all' specify which kind of Jacobian used.
 % 'w': rotational Jacobian  'v':velocity Jacobian  'all':whole Jacobian
 figure;
