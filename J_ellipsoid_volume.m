@@ -1,6 +1,8 @@
 function mu3 = J_ellipsoid_volume(J_body,type)
-%J_ELLIPSOID_VOLUME Summary of this function goes here
-%   Detailed explanation goes here
+%J_ELLIPSOID_VOLUME computes the ellipsoid volume of a Jacobian matrix
+%   J_body is a 6-by-n Jacobian Matrix
+%   type: 'w','v','all' allow user to pick from J_w, J_v(both 3-by-n) and
+%   J(6-by-n) to compute the ellipsoid volume
 switch type
     case 'w'
         J = J_body(1:3,:);

@@ -1,6 +1,8 @@
 function mu1 = J_isotropy(J_body,type)
-%J_ISOTROPY Summary of this function goes here
-%   Detailed explanation goes here
+%J_ISOTROPY computes the isotropy of a Jacobian matrix.
+%   J_body is a 6-by-n Jacobian Matrix
+%   type: 'w','v','all' allow user to pick from J_w, J_v(both 3-by-n) and
+%   J(6-by-n) to compute the isotropy
 switch type
     case 'w'
         J = J_body(1:3,:);

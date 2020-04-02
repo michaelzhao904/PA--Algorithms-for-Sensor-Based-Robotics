@@ -1,6 +1,10 @@
 function [U,S] = ellipsoid_plot(J_body,type)
-%ELLIPSOID_PLOT Summary of this function goes here
-%   Detailed explanation goes here
+%ELLIPSOID_PLOT plots the ellipsoid of manipulability
+%   J_body is a 6-by-n Jacobian Matrix
+%   type: 'w','v','all' allow user to pick from J_w, J_v(both 3-by-n) and
+%   J(6-by-n) to plot the ellipsoid. In the 'all' case, three smallest
+%   singular values will be pick and the vectors will be compressed to
+%   3-dimensional and make the plot
 n = 3;
 switch type
     case 'w'

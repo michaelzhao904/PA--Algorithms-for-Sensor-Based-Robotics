@@ -61,31 +61,37 @@ addBody(Panda,body8,'body7')
 % axis off
 
 Panda.DataFormat = 'row';
-%% 
+
 % T_tb = getTransform(Panda,[pi/4,pi/4,pi/4,0,0,0,0,0],'body8');
 
 % geoJacob = geometricJacobian(Panda,homeConfiguration(Panda),'body8');
 % show(Panda,homeConfiguration(Panda));hold on;axis off
 
 %% Predefined configurations
+run('PA_a.m'); % obtain M and tab_space
+run('PA_ca.m'); % obtain M and tab_b
 homeConfig = zeros(8,1); % robot home configuration
 config = [0,0,0,0,0,0,0,0]'; % test config
-config_2 = [0,pi/2,pi/4,pi/4,pi/4,pi/4,0,0];
-%% Tests for FK_space, FK_body, J_space, J_body
-
-% run('PA_a.m'); % obtain M and tab_space
-run('PA_ca.m'); % obtain M and tab_b
+config_2 = [0,pi/2,pi/4,pi/4,pi/4,pi/4,0,0]';
+config = config_2;
+%% Tests for FK_space, FK_body
 
 % test for FK
-% FK_s = FK_space(M,tab_space,config);
+FK_s = FK_space(M,tab_s,config);
 FK_b = FK_body(M,tab_b,config);
 FK_m = getTransform(Panda,config','body8');
 
-% test for Jacobian
-J_b = J_body(tab_b,config);
-% J_s = J_space(tab_space,config);
-J_s2b = Ad_T(FK_b)*J_b;
+% % test for Jacobian
+% J_b = J_body(tab_b,config);
+% % J_s = J_space(tab_space,config);
+% J_s2b = Ad_T(FK_b)*J_b;
 
+%% Tests for J_space, J_body
+
+J_s = J_space(tab_s,config)
+J_b = J_body(tab_b,config);
+T_sb = FK_body(M,tab_b,config);
+J_b2s = Ad_T(T_sb)*J_b
 %% Test for J_inverse_kinematics.m
 
 T_sd = FK_body(M,tab_b,config_2); %set desired configuration
