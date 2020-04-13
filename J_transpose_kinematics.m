@@ -16,8 +16,8 @@ while 1
     G_inv =  eye(3)/theta - 0.5*W + (1/theta-0.5*cot(theta/2))*W^2;
     v = G_inv*p;
     
-    err_w = norm(w*theta);
-    err_v = norm(v*theta);
+    err_w = norm(w*theta)
+    err_v = norm(v*theta)
     
     S_theta = theta*[w; v];
     

@@ -30,9 +30,9 @@ while n > angle_err || n1 > vel_err
     W = skewSymm(w);
     G_inv =  eye(3)/theta - 0.5*W + (1/theta-0.5*cot(theta/2))*W^2;
     v = G_inv*p;
-    V_twist = [w ; v];
-    n = norm(w*theta);
-    n1 = norm(v*theta);
+    V_twist = [w ; v]*theta;
+    n = norm(w*theta)
+    n1 = norm(v*theta)
     
     J = J_body(tab_body, config);
     J_pinv = pinv(J);
