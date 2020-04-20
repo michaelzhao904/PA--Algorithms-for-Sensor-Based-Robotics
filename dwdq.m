@@ -4,7 +4,7 @@ function dwdq = dwdq(J_body,tab_body,config)
 %   wrt to q. J_body: Jacobian function; tab_body, config: parameters and
 %   configuration for robot.
 
-dwdq = zeros(size(config))';
+dwdq = zeros(size(config));
 
 delta = 1e-4;
 

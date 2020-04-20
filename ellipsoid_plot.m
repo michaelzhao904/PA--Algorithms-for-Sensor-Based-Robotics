@@ -33,6 +33,7 @@ for i = 1:size(x,1)
     end
 end
 surf(x,y,z);
+S = diag(S);
 axis equal;
 title(['ellipsoid for ',type]);
 

@@ -57,7 +57,7 @@ addBody(Panda,body8,'body7')
 
 % showdetails(Panda)
 
-% show(Panda);
+show(Panda);
 % axis off
 Panda.DataFormat = 'row';
 

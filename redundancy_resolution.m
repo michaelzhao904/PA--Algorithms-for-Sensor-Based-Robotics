@@ -1,4 +1,4 @@
-function redundancy_solution = redundancy_resolution(T_sd, M, tab_body,...
+function redundancy_solution = redundancy_resolution(T_sd, M, tab_b,...
     config, delta, k0, dt)
 %This function is for calculating the inverse kinematics with an added aim 
 %of maximizing the manipulability measure and aim at exploiting 
@@ -13,14 +13,14 @@ function redundancy_solution = redundancy_resolution(T_sd, M, tab_body,...
 %2nd dimension for joint angles
 angle_err = delta(1);
 vel_err = delta(2);
-p_dim = size(tab_body,1);
+p_dim = size(tab_b,1);
 w = ones(1,3);      %used for initialising the variables n and n1
 v = ones(1,3);
 n = norm(w);        
 n1 = norm(v);
 redundancy_solution = config';
 while n > angle_err || n1 > vel_err
-    T_sb = FK_body(M,tab_body,config);
+    T_sb = FK_body(M,tab_b,config);
     T_bs = [T_sb(1:3,1:3)' -T_sb(1:3,1:3)'*T_sb(1:3,4);
         zeros(1,3), 1];
     T_bd = T_bs*T_sd;
@@ -34,11 +34,11 @@ while n > angle_err || n1 > vel_err
     n = norm(w*theta)
     n1 = norm(v*theta)
     
-    J = J_body(tab_body, config);
+    J = J_body(tab_b, config);
     J_pinv = pinv(J);
     
-    w_q = dwdq(@J_body,tab_body,config);
-    q0_dot = k0*w_q';
+    w_q = real(dwdq(@J_body,tab_b,config));
+    q0_dot = k0*w_q;
     
     q_dot = J_pinv*V_twist+(eye(p_dim)-J_pinv*J)*q0_dot;
     config = config + q_dot*dt;
