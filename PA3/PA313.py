@@ -15,7 +15,6 @@ for i in range(N_frame):
 
     pts_D = calreadings_data[(i * N_tol):(i * N_tol + N_D), :]
     F_D = RegisCalib.registration3D(pts_d, pts_D)
-    print(F_D)
 
     pts_A = calreadings_data[(N_D + i * N_tol):(N_D + i * N_tol + N_A), :]
     F_A = RegisCalib.registration3D(pts_a, pts_A)
