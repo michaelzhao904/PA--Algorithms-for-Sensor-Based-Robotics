@@ -1,4 +1,4 @@
-# function package for PA3
+# function package for PA3 by Qishen
 import numpy as np
 
 
