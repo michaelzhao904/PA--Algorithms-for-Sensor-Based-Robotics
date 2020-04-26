@@ -30,7 +30,7 @@ def registration3D(pts_a, pts_b):
     # Step 4: find p vector
     p = ave_b - R.dot(ave_a)
     p = p[:, None]
-    # Step 5： find desired transformation
+    # Step 5: find desired transformation
     T = np.c_[R, p]
     T = np.concatenate((T, np.array([[0, 0, 0, 1]])))
     return T
