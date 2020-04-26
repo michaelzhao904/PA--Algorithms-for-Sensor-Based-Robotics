@@ -30,7 +30,7 @@ for j = 1:(n-1)
     D = M;
 end
 R_axis = (transpose(M)*M)^(-0.5)*transpose(M);   %calculating the value of R
-%%This part of the code calculates the translation vector using axis angle method (Refer Step 2) %%
+%%This part of the code calculates the translation vector using axis angle method %%
 I = eye(3);  
 K = zeros(3,3,(n-1));
 for j = 1:(n-1)
