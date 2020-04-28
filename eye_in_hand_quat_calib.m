@@ -1,5 +1,5 @@
 function [R_quat,T_quat] = eye_in_hand_quat_calib(q_Robot_config,q_camera_config,t_Robot_config,t_camera_config)
-%%This algorithm is for hand-eye calibration for eye in hand problem using axis-angle approach%%
+%%This algorithm is for hand-eye calibration for eye in hand problem using quaternion approach%%
 n = size(q_Robot_config,1);
 E = zeros(4,4,n);
 S = zeros(4,4,n);
