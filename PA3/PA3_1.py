@@ -17,6 +17,7 @@ N_tol = N_D + N_A + N_C
 C_expected = np.zeros((N_C * N_frame, 3))
 pts_d = calbody_data[0:N_D, :]
 pts_a = calbody_data[N_D:(N_A + N_D), :]
+
 for i in range(N_frame):
 
     pts_D = calreadings_data[(i * N_tol):(i * N_tol + N_D), :]
