@@ -121,36 +121,60 @@ q_max = [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 3.8973, 0];
 q_min = [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973, 0];
 config_init = [0, 0, 0, -0.0698, 0, 0, 0, 0];
 %% (a)
-
-%% (b)
-w1 = 1;
-w2 = 1;
 err = 1e10; % initailize error
-jointsData = config_init;
+jointsData_a = config_init;
 i = 1;
 while true
-    T = FK_space(M, tab_s, jointsData(i,:));
+    T = FK_space(M, tab_s, jointsData_a(i,:));
     R = T(1:3,1:3);
     t = T(1:3,4);
     err = norm(t-p_goal,2);
-    if err < 1e-4
+    if err < 1e-1
         break
     end
-    J = J_space(tab_s, jointsData(i,:));
+    J = J_space(tab_s, jointsData_a(i,:));
+    J_alpha = J(1:3,:);
+    J_epsilon = J(4:6,:);
+    
+    C = -skewSymm(t)*J_alpha + J_epsilon;
+    d = p_goal - t;
+    
+    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_a(i,:))'/100,...
+        (q_max-jointsData_a(i,:))'/100);
+    jointsData_a(i+1,:) = jointsData_a(i,:) + dq';
+    i=i+1;
+end
+%% (b)
+w1 = 1;
+w2 = 100;
+err = 1e10; % initailize error
+jointsData_b = config_init;
+i = 1;
+while true
+    T = FK_space(M, tab_s, jointsData_b(i,:));
+    R = T(1:3,1:3);
+    t = T(1:3,4);
+    err = norm(t-p_goal,2);
+    if err < 1e-1
+        break
+    end
+    J = J_space(tab_s, jointsData_b(i,:));
     J_alpha = J(1:3,:);
     J_epsilon = J(4:6,:);
     
     C1 = sqrt(w1)*(-skewSymm(t)*J_alpha + J_epsilon);
     d1 = p_goal - t;
-    C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 0]')*J_alpha);
+    C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 1]')*J_alpha);
     d2 = zeros(3,1);
     
     C = [C1; C2];
     d = [d1; d2];
     
-    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData(i,:))'/100,...
-        (q_max-jointsData(i,:))'/100);
-    jointsData(i+1,:) = jointsData(i,:) + dq';
+    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_b(i,:))'/100,...
+        (q_max-jointsData_b(i,:))'/100);
+    jointsData_b(i+1,:) = jointsData_b(i,:) + dq';
     i=i+1;
 end
 % T = FK_space(M,tab_s,jointsData(1,:))
+
+%% (c)
