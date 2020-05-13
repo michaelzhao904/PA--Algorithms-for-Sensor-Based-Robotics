@@ -120,42 +120,56 @@ p_goal = [0.2036, 0.5487, 0.7682]';
 q_max = [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 3.8973, 0];
 q_min = [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973, 0];
 config_init = [0, 0, 0, -0.0698, 0, 0, 0, 0];
+
 %% (a)
 err = 1e10; % initailize error
 jointsData_a = config_init;
 i = 1;
+w1 = 1;
+w2 = 10;        
+w3 = 0.5;
+x0 = zeros(8,1);
 while true
     T = FK_space(M, tab_s, jointsData_a(i,:));
     R = T(1:3,1:3);
     t = T(1:3,4);
     err = norm(t-p_goal,2);
-    if err < 1e-1
+    if err < 1e-3
         break
     end
     J = J_space(tab_s, jointsData_a(i,:));
     J_alpha = J(1:3,:);
     J_epsilon = J(4:6,:);
     
-    C = -skewSymm(t)*J_alpha + J_epsilon;
-    d = p_goal - t;
+    C1 = -skewSymm(t)*J_alpha + J_epsilon;
+    d1 = p_goal - t;
     
-    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_a(i,:))'/100,...
-        (q_max-jointsData_a(i,:))'/100);
+    C3 = sqrt(w3)*J_alpha;
+    d3 = zeros(3,1);
+    
+    C = [C1; C3];
+    d = [d1; d3];
+    
+    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_a(i,:))'/200,...
+        (q_max-jointsData_a(i,:))'/200, x0);
+    x0 = dq;
     jointsData_a(i+1,:) = jointsData_a(i,:) + dq';
     i=i+1;
 end
 %% (b)
-w1 = 1;
-w2 = 100;
 err = 1e10; % initailize error
 jointsData_b = config_init;
 i = 1;
+w1 = 1;
+w2 = 1;        
+w3 = 0.5;
+x0 = zeros(8,1);
 while true
     T = FK_space(M, tab_s, jointsData_b(i,:));
     R = T(1:3,1:3);
     t = T(1:3,4);
     err = norm(t-p_goal,2);
-    if err < 1e-1
+    if err < 1e-3
         break
     end
     J = J_space(tab_s, jointsData_b(i,:));
@@ -166,12 +180,16 @@ while true
     d1 = p_goal - t;
     C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 1]')*J_alpha);
     d2 = zeros(3,1);
+
+    C3 = sqrt(w3)*J_alpha;
+    d3 = zeros(3,1);
     
-    C = [C1; C2];
-    d = [d1; d2];
+    C = [C1; C2; C3];
+    d = [d1; d2; d3];
     
-    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_b(i,:))'/100,...
-        (q_max-jointsData_b(i,:))'/100);
+    dq = lsqlin(C, d, [], [], [], [], (q_min-jointsData_b(i,:))'/200,...
+        (q_max-jointsData_b(i,:))'/200, x0);
+    x0 = dq;
     jointsData_b(i+1,:) = jointsData_b(i,:) + dq';
     i=i+1;
 end
