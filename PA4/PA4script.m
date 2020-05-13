@@ -124,15 +124,23 @@ config_init = [0, 0, 0, -0.0698, 0, 0, 0, 0];
 %% (a)
 err = 1e10; % initailize error
 jointsData_a = config_init;
+p_a = zeros(3,1);
+R_a = zeros(3,3,1);
 i = 1;
 w1 = 1;
 w2 = 10;        
 w3 = 0.5;
 x0 = zeros(8,1);
+distance_a = 0;
+Rnorm_a = 0;
 while true
     T = FK_space(M, tab_s, jointsData_a(i,:));
     R = T(1:3,1:3);
+    R_a(:,:,i) = R;
     t = T(1:3,4);
+    p_a(:,i) = t;
+    distance_a(i) = norm(t - p_goal);
+    Rnorm_a(i) = norm(R - R_a(:,:,1),'fro');
     err = norm(t-p_goal,2);
     if err < 1e-3
         break
@@ -141,10 +149,10 @@ while true
     J_alpha = J(1:3,:);
     J_epsilon = J(4:6,:);
     
-    C1 = -skewSymm(t)*J_alpha + J_epsilon;
+    C1 = -skewSymm(t)*J_alpha + J_epsilon; % cost for distance
     d1 = p_goal - t;
     
-    C3 = sqrt(w3)*J_alpha;
+    C3 = sqrt(w3)*J_alpha; % cost for joint angle change
     d3 = zeros(3,1);
     
     C = [C1; C3];
@@ -159,15 +167,23 @@ end
 %% (b)
 err = 1e10; % initailize error
 jointsData_b = config_init;
+p_b = zeros(3,1);
+R_b = zeros(3,3,1);
 i = 1;
 w1 = 1;
-w2 = 1;        
+w2 = 1;
 w3 = 0.5;
 x0 = zeros(8,1);
+distance_b = 0;
+Rnorm_b = 0;
 while true
     T = FK_space(M, tab_s, jointsData_b(i,:));
     R = T(1:3,1:3);
+    R_b(:,:,i) = R;
     t = T(1:3,4);
+    p_b(:,i) = t;
+    distance_b(i) = norm(t - p_goal);
+    Rnorm_b(i) = norm(R - R_b(:,:,1),'fro');
     err = norm(t-p_goal,2);
     if err < 1e-3
         break
@@ -176,12 +192,12 @@ while true
     J_alpha = J(1:3,:);
     J_epsilon = J(4:6,:);
     
-    C1 = sqrt(w1)*(-skewSymm(t)*J_alpha + J_epsilon);
+    C1 = sqrt(w1)*(-skewSymm(t)*J_alpha + J_epsilon); % cost for distance
     d1 = p_goal - t;
-    C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 1]')*J_alpha);
+    C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 1]')*J_alpha); % cost for rotation
     d2 = zeros(3,1);
 
-    C3 = sqrt(w3)*J_alpha;
+    C3 = sqrt(w3)*J_alpha; % cost for joint angle change
     d3 = zeros(3,1);
     
     C = [C1; C2; C3];
@@ -196,3 +212,20 @@ end
 % T = FK_space(M,tab_s,jointsData(1,:))
 
 %% (c)
+
+%% (d)
+
+% compare (a) and (b)
+figure(1);
+plot(distance_a, 'linewidth',2); hold on;
+plot(distance_b, 'linewidth',2);
+xlabel('iterations'); ylabel('distance(m)');
+legend('problem (a)','problem (b)');
+set(gca,'fontSize',14);
+
+figure(2);
+plot(Rnorm_a, 'linewidth',2); hold on;
+plot(Rnorm_b, 'linewidth',2);
+xlabel('iterations'); ylabel('R difference(Frobenius norm)');
+legend('problem (a)','problem (b)');
+set(gca,'fontSize',14);
