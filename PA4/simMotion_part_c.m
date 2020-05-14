@@ -1,4 +1,4 @@
-function simMotion(robot,p_goal,data,frames,wall)
+function simMotion_part_c(robot,p_goal,data,frames,wall)
 %VISUALROBOT Visualize the robot and simulate the movement with data input
 %   robot: robot tree model; T_sd: desired end-effector pose; data:times
 %   series data:(time step,joint); steps: totoal frames
