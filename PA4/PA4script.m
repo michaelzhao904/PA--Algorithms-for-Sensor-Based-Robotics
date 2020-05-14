@@ -117,14 +117,14 @@ tab_s = [w1, v1;
 %% configuration settings
 p_goal = [0.2036, 0.5487, 0.7682]';
 p_goal = [0.100331177754766;0;0.825185411143709];
-p_goal = [0, -.6, 1]';
+p_goal = [0, -.5, .9]';
 % FK_space(M, tab_s, config_init);
 q_max = [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 3.8973, 0];
 q_min = [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973, 0];
 config_init = [0, 0, 0, -0.0698, 0, 0, 0, 0];
 config_init =[1.1895,0.400,0.415,-0.436,0.898,2.11,1.0181,0]
 w1 = 1;
-w2 = 5;        
+w2 = 5;
 w3 = 0.5;
 %% (a)
 err = 1e10; % initailize error
@@ -232,7 +232,44 @@ distance_cb = 0;
 Rnorm_cb = 0;
 
 err = 1e10;
+
 % ca
+while true
+    T = FK_space(M, tab_s, jointsData_ca(i,:));
+    R = T(1:3,1:3);
+    R_ca(:,:,i) = R;
+    t = T(1:3,4);
+    p_ca(:,i) = t;
+    distance_ca(i) = norm(t - p_goal);
+    Rnorm_ca(i) = norm(R - R_ca(:,:,1),'fro');
+    err = norm(t-p_goal,2);
+    if err < 1e-3
+        break
+    end
+    J = J_space(tab_s, jointsData_ca(i,:));
+    J_alpha = J(1:3,:);
+    J_epsilon = J(4:6,:);
+    
+    C1 = sqrt(w1)*(-skewSymm(t)*J_alpha + J_epsilon); % cost for distance
+    d1 = p_goal - t;
+
+    C3 = sqrt(w3)*J_alpha; % cost for joint angle change
+    d3 = zeros(3,1);
+    
+    C = [C1; C3];
+    d = [d1; d3];
+    
+    A_ineq = n_vec'*(J_epsilon-skewSymm(t)*J_alpha);
+    b_ineq = dis - n_vec'*t;
+    
+    dq = lsqlin(C, d, A_ineq, b_ineq, [], [], (q_min-jointsData_ca(i,:))'/200,...
+        (q_max-jointsData_ca(i,:))'/200);
+%     x0 = dq;
+    jointsData_ca(i+1,:) = jointsData_ca(i,:) + dq';
+    i=i+1;
+end
+% cb
+i=1;
 while true
     T = FK_space(M, tab_s, jointsData_cb(i,:));
     R = T(1:3,1:3);
@@ -284,4 +321,18 @@ plot(Rnorm_a, 'linewidth',2); hold on;
 plot(Rnorm_b, 'linewidth',2);
 xlabel('iterations'); ylabel('R difference');
 legend('problem (a)','problem (b)');
+set(gca,'fontSize',14);
+
+figure(3);
+plot(distance_ca, 'linewidth',2);hold on;
+plot(distance_cb, 'linewidth',2);
+xlabel('iterations'); ylabel('distance(m)');
+legend('problem (ca)','problem (cb)');
+set(gca,'fontSize',14);
+
+figure(4);
+plot(Rnorm_ca, 'linewidth',2); hold on;
+plot(Rnorm_cb, 'linewidth',2);
+xlabel('iterations'); ylabel('R difference');
+legend('problem (ca)','problem (cb)');
 set(gca,'fontSize',14);
