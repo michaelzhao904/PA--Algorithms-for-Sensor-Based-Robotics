@@ -56,9 +56,9 @@ addBody(Panda,body6,'body5')
 addBody(Panda,body7,'body6')
 addBody(Panda,body8,'body7')
 
-showdetails(Panda)
+% showdetails(Panda)
 
-show(Panda);
+% show(Panda);
 % axis off
 Panda.DataFormat = 'row';
 
@@ -116,20 +116,23 @@ tab_s = [w1, v1;
    
 %% configuration settings
 p_goal = [0.2036, 0.5487, 0.7682]';
+p_goal = [0.100331177754766;0;0.825185411143709];
+p_goal = [0, -.6, 1]';
 % FK_space(M, tab_s, config_init);
 q_max = [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 3.8973, 0];
 q_min = [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973, 0];
 config_init = [0, 0, 0, -0.0698, 0, 0, 0, 0];
-
+config_init =[1.1895,0.400,0.415,-0.436,0.898,2.11,1.0181,0]
+w1 = 1;
+w2 = 5;        
+w3 = 0.5;
 %% (a)
 err = 1e10; % initailize error
 jointsData_a = config_init;
 p_a = zeros(3,1);
 R_a = zeros(3,3,1);
 i = 1;
-w1 = 1;
-w2 = 10;        
-w3 = 0.5;
+
 x0 = zeros(8,1);
 distance_a = 0;
 Rnorm_a = 0;
@@ -170,9 +173,6 @@ jointsData_b = config_init;
 p_b = zeros(3,1);
 R_b = zeros(3,3,1);
 i = 1;
-w1 = 1;
-w2 = 1;
-w3 = 0.5;
 x0 = zeros(8,1);
 distance_b = 0;
 Rnorm_b = 0;
@@ -212,7 +212,63 @@ end
 % T = FK_space(M,tab_s,jointsData(1,:))
 
 %% (c)
+wall = p_goal;
+dis = norm(wall);
+n_vec = wall/dis;
 
+jointsData_ca = config_init;
+jointsData_cb = config_init;
+
+p_ca = zeros(3,1);
+R_ca = zeros(3,3,1);
+p_cb = zeros(3,1);
+R_cb = zeros(3,3,1);
+
+i = 1;
+x0 = zeros(8,1);
+distance_ca = 0;
+Rnorm_ca = 0;
+distance_cb = 0;
+Rnorm_cb = 0;
+
+err = 1e10;
+% ca
+while true
+    T = FK_space(M, tab_s, jointsData_cb(i,:));
+    R = T(1:3,1:3);
+    R_cb(:,:,i) = R;
+    t = T(1:3,4);
+    p_cb(:,i) = t;
+    distance_cb(i) = norm(t - p_goal);
+    Rnorm_cb(i) = norm(R - R_cb(:,:,1),'fro');
+    err = norm(t-p_goal,2);
+    if err < 1e-3
+        break
+    end
+    J = J_space(tab_s, jointsData_cb(i,:));
+    J_alpha = J(1:3,:);
+    J_epsilon = J(4:6,:);
+    
+    C1 = sqrt(w1)*(-skewSymm(t)*J_alpha + J_epsilon); % cost for distance
+    d1 = p_goal - t;
+    C2 = sqrt(w2)*(-skewSymm(R*[0, 0, 1]')*J_alpha); % cost for rotation
+    d2 = zeros(3,1);
+
+    C3 = sqrt(w3)*J_alpha; % cost for joint angle change
+    d3 = zeros(3,1);
+    
+    C = [C1; C2; C3];
+    d = [d1; d2; d3];
+    
+    A_ineq = n_vec'*(J_epsilon-skewSymm(t)*J_alpha);
+    b_ineq = dis - n_vec'*t;
+    
+    dq = lsqlin(C, d, A_ineq, b_ineq, [], [], (q_min-jointsData_cb(i,:))'/200,...
+        (q_max-jointsData_cb(i,:))'/200);
+%     x0 = dq;
+    jointsData_cb(i+1,:) = jointsData_cb(i,:) + dq';
+    i=i+1;
+end
 %% (d)
 
 % compare (a) and (b)
@@ -226,6 +282,6 @@ set(gca,'fontSize',14);
 figure(2);
 plot(Rnorm_a, 'linewidth',2); hold on;
 plot(Rnorm_b, 'linewidth',2);
-xlabel('iterations'); ylabel('R difference(Frobenius norm)');
+xlabel('iterations'); ylabel('R difference');
 legend('problem (a)','problem (b)');
 set(gca,'fontSize',14);
